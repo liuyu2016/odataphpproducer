@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<configuration>
+    <services>
+        <service name="NorthWind.svc">
+          <path>\services\NorthWind\NorthWindDataService.php</path> 
+          <classname>NorthWindDataService</classname>
+          <baseURL>/NorthWind.svc</baseURL>
+        </service>
+        <service name="WordPress.svc">
+          <path>\services\WordPress\WordPressDataService.php</path>
+          <classname>WordPressDataService</classname>
+          <baseURL>/WordPress.svc</baseURL>
+      </service>
+    </services>
+</configuration>
+
+
