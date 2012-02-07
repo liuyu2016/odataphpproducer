@@ -24,7 +24,6 @@ require_once 'PHPUnit\Framework\SelfDescribing.php';
 require_once 'PHPUnit\Framework\TestCase.php';
 require_once 'PHPUnit\Framework\TestSuite.php';
 require_once 'ODataProducer\Common\ClassAutoLoader.php';
-require_once (dirname(__FILE__) . "\..\..\services\NorthWind\NorthWindDataService.php");
 ODataProducer\Common\ClassAutoLoader::register();
 
 class TestObjectModelSerializer extends PHPUnit_Framework_TestCase

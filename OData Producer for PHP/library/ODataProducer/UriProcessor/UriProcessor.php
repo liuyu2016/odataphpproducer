@@ -173,7 +173,6 @@ class UriProcessor
                         $segmentDescriptor->getPrevious()->getIdentifier()
                     );
                 }
-
                 $this->_handleSegmentTargetsToRelatedResource($segmentDescriptor);
             } else if ($requestTargetKind == RequestTargetKind::LINK) {
                 $segmentDescriptor->setResult($segmentDescriptor->getPrevious()->getResult());
@@ -258,9 +257,9 @@ class UriProcessor
             
         } else {
             $entityInstances = $this->_provider->getResourceSet(
-                $segmentDescriptor->getTargetResourceSetWrapper()->getResourceSet()
+                $segmentDescriptor->getTargetResourceSetWrapper()->getResourceSet(),
+                $this->_requestDescription->getInternalFilterInfo()
             );
-
             $segmentDescriptor->setResult($entityInstances);
         }
     }
@@ -293,15 +292,16 @@ class UriProcessor
                 $segmentDescriptor->setResult($entityInstance);
             } else {
                 $entityInstances 
-                    = $this->_provider->getRelatedResourceSet(
-                        $segmentDescriptor->getPrevious()->getTargetResourceSetWrapper()->getResourceSet(),
-                        $segmentDescriptor->getPrevious()->getResult(),
-                        $segmentDescriptor->getTargetResourceSetWrapper()->getResourceSet(),
-                        $segmentDescriptor->getProjectedProperty()
+                   	= $this->_provider->getRelatedResourceSet(
+                       	$segmentDescriptor->getPrevious()->getTargetResourceSetWrapper()->getResourceSet(),
+                       	$segmentDescriptor->getPrevious()->getResult(),
+                       	$segmentDescriptor->getTargetResourceSetWrapper()->getResourceSet(),
+                       	$segmentDescriptor->getProjectedProperty(),
+                       	$this->_requestDescription->getInternalFilterInfo()
                     );
 
                 $segmentDescriptor->setResult($entityInstances);
-            }
+            }           
         } else if ($projectedPropertyKind == ResourcePropertyKind::RESOURCE_REFERENCE) {
             $entityInstance 
                 = $this->_provider->getRelatedResourceReference(
@@ -334,32 +334,36 @@ class UriProcessor
             $internalFilterInfo 
                 = $this->_requestDescription->getInternalFilterInfo();
             if (!is_null($internalFilterInfo)) {
-                $filterFunction 
-                    = $internalFilterInfo->getFilterFunction()->getReference();
-                if (is_array($result)) {
-                    $count = count($result);
-                    for ($i = 0; $i < $count; $i++) {
-                        if (!$filterFunction($result[$i])) {
-                            unset($result[$i]);
-                        } 
+                if (!$internalFilterInfo->isCustomExpression()) {
+                  // The QP implementation is not going to perform the filtering
+                  // opted for PHPExpressionProvider so run the filtering.
+                    $filterFunction 
+                        = $internalFilterInfo->getFilterFunction()->getReference();
+                    if (is_array($result)) {
+                        $count = count($result);
+                        for ($i = 0; $i < $count; $i++) {
+                            if (!$filterFunction($result[$i])) {
+                                unset($result[$i]);
+                            } 
+                        }
+
+                        $result = array_merge($result);
+                    } else {
+                        if (!$filterFunction($result)) {
+                            unset($result);
+                            $result = null;
+                        }
                     }
 
-                    $result = array_merge($result);
+                    unset($filterFunction);
                 } else {
-                    if (!$filterFunction($result)) {
-                        unset($result);
-                        $result = null;
-                    }
+                      // The QP2 implementation performed the filtering so don't perform
+                      // filtering using library generated filter function.
                 }
 
-                unset($filterFunction);
-                unset($internalFilterInfo);
-                //if (gc_enabled()) {
-                //    gc_collect_cycles();
-                //}
+              unset($internalFilterInfo);
             }
         }
-
         // $inlinecount=allpages should ignore the query options 
         // $skiptoken, $top and $skip so take count before applying these options
         if ($this->_requestDescription->getRequestCountOption() != RequestCountOption::NONE && is_array($result)
@@ -455,7 +459,8 @@ class UriProcessor
                             $currentResourceSet,
                             $entry,
                             $resourceSetOfProjectedProperty,
-                            $projectedProperty1
+                            $projectedProperty1,
+                            null
                         );
                         if (!empty($result1)) {
                             $internalOrderByInfo 
@@ -511,7 +516,8 @@ class UriProcessor
                         $currentResourceSet2,
                         $result,
                         $resourceSetOfProjectedProperty2,
-                        $projectedProperty4
+                        $projectedProperty4,
+                        null
                     );
                     if (!empty($result1)) {
                         $internalOrderByInfo = $expandedProjectionNode->getInternalOrderByInfo();

@@ -180,6 +180,16 @@ class Messages
     {
         return "Unexpected expression of type \'$expressionClassName\' found";
     }   
+ 
+    /**
+     * Format a message to show error when expression contains sub-property access of non-primitive property.
+     * 
+     * @return string The message
+     */
+    public static function expressionParser2NonPrimitivePropertyNotAllowed()
+    {
+    	return 'This data service does not support non-primitive types in the expression';
+    }
 
     /** 
      * Format message for not applicable function error
@@ -628,6 +638,28 @@ class Messages
     public static function resourceSetContainerMustBeAssociatedWithEntityType()
     {
         return 'The ResourceTypeKind property of a ResourceType instance associated with a ResourceSet must be equal to \'EntityType\'';
+    }
+
+    /**
+     * The error message to show when IDataServiceQueryProvider2::getExpressionProvider
+     * method returns empty or null
+     *
+     * @return The message
+     */
+    public static function metadataQueryProviderExpressionProviderMustNotBeNullOrEmpty()
+    {
+        return 'The value returned by IDataServiceQueryProvider2::getExpressionProvider method must not be null or empty';
+    }
+
+    /**
+     * The error message to show when IDataServiceQueryProvider2::getExpressionProvider
+     * method returns non-object or an object which does not implement IExpressionProvider
+     *
+     * @return The message
+     */
+    public static function metadataQueryProviderInvalidExpressionProviderInstance()
+    {
+    	return 'The value returned by IDataServiceQueryProvider2::getExpressionProvider method must be an implementation of IExpressionProvider';
     }
 
     /**

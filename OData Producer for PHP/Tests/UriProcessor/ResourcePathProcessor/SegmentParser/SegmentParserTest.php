@@ -27,7 +27,7 @@ class TestSegmentParser extends PHPUnit_Framework_TestCase
         $this->_metadataProvider = CreateNorthWindMetadata3::Create();
         $this->_serviceConfiguration = new DataServiceConfiguration($this->_metadataProvider);
         $this->_serviceConfiguration->setEntitySetAccessRule('*', EntitySetRights::ALL);
-        $this->_metadataProviderWrapper = new MetadataQueryProviderWrapper($this->_metadataProvider, null, $this->_serviceConfiguration);
+        $this->_metadataProviderWrapper = new MetadataQueryProviderWrapper($this->_metadataProvider, null, $this->_serviceConfiguration, false);
     }
 
     public function testEmptySegments()
@@ -207,7 +207,7 @@ class TestSegmentParser extends PHPUnit_Framework_TestCase
             $serviceConfiguration = new DataServiceConfiguration($metadataProvider);
             //HIDING ALL RESOURCE SET
             $serviceConfiguration->setEntitySetAccessRule('*', EntitySetRights::NONE); 
-            $metadataProviderWrapper = new MetadataQueryProviderWrapper($metadataProvider, null, $serviceConfiguration);
+            $metadataProviderWrapper = new MetadataQueryProviderWrapper($metadataProvider, null, $serviceConfiguration, false);
             $segments = array("Employees('AF123')");
             $exceptionThrown = false;
             try {
@@ -823,7 +823,7 @@ class TestSegmentParser extends PHPUnit_Framework_TestCase
         $serviceConfiguration = new DataServiceConfiguration($this->_metadataProvider);
         $serviceConfiguration->setEntitySetAccessRule('Customers', EntitySetRights::READ_ALL);
         $serviceConfiguration->setEntitySetAccessRule('Orders', EntitySetRights::NONE);
-        $metadataProviderWrapper = new MetadataQueryProviderWrapper($metadataProvider, null, $serviceConfiguration);
+        $metadataProviderWrapper = new MetadataQueryProviderWrapper($metadataProvider, null, $serviceConfiguration, false);
         $segments = array("Customers(CustomerID='ALFKI', CustomerGuid=guid'15b242e7-52eb-46bd-8f0e-6568b72cd9a6')",          
                           'Orders(789)',
                           'OrderID');

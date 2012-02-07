@@ -14,6 +14,7 @@
  * 
  */
 namespace ODataProducer\UriProcessor\QueryProcessor\ExpressionParser;
+use ODataProducer\Providers\Metadata\ResourceType;
 use ODataProducer\UriProcessor\QueryProcessor\ExpressionParser\Expressions\ExpressionType;
 use ODataProducer\Providers\Metadata\Type\IType;
 use ODataProducer\Common\NotImplementedException;
@@ -60,6 +61,13 @@ class PHPExpressionProvider implements IExpressionProvider
     private $_iterName;
 
     /**
+     * The type of the resource pointed by the resource path segement
+     * 
+     * @var ResourceType
+     */
+    private $_resourceType;
+
+    /**
      * Constructs new instance of PHPExpressionProvider
      * 
      * @param string $iterName The name of the iterator
@@ -77,6 +85,19 @@ class PHPExpressionProvider implements IExpressionProvider
     public function getIteratorName()
     {
         return $this->_iterName;
+    }
+
+    /**
+     * call-back for setting the resource type.
+     *
+     * @param ResourceType $resourceType The resource type on which the filter
+     *                                   is going to be applied.
+     *
+     * @return void
+     */
+    public function setResourceType(ResourceType $resourceType)
+    {
+    	$this->_resourceType = $resourceType;
     }
 
     /**

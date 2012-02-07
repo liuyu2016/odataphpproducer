@@ -20,7 +20,7 @@ class NorthWindDataServiceV1 extends DataService2 implements IServiceProvider
      * 
      * @param DataServiceConfiguration $config
      */
-    public static function initializeService(DataServiceConfiguration &$config)
+    public function initializeService(DataServiceConfiguration &$config)
     {
         $config->setEntitySetAccessRule('*', EntitySetRights::ALL);
         //we are using V1 protocol, but still we set page size because with

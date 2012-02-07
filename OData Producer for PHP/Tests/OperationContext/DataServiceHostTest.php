@@ -19,8 +19,6 @@ require_once 'PHPUnit\Framework\Test.php';
 require_once 'PHPUnit\Framework\SelfDescribing.php';
 require_once 'PHPUnit\Framework\TestCase.php';
 require_once 'PHPUnit\Framework\TestSuite.php';
-//require_once (dirname(__FILE__) . "\..\..\services\NorthWind\NorthWindMetadata.php");
-require_once (dirname(__FILE__) . "\..\..\services\NorthWind\NorthWindDataService.php");
 require_once 'ODataProducer\Common\ClassAutoLoader.php';
 ODataProducer\Common\ClassAutoLoader::register();
 

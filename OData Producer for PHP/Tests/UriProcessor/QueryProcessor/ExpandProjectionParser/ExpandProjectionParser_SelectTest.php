@@ -34,7 +34,8 @@ class TestExpandProjectionParser_Select extends PHPUnit_Framework_TestCase
                 $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                $queryProvider, //IDataServiceQueryProvider implementation (set to null)
-                                               $configuration //Service configuration
+                                               $configuration, //Service configuration
+                                               false
                                              );
                 $customersResourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Customers');
                 $customerResourceType = $customersResourceSetWrapper->getResourceType(); 
@@ -79,7 +80,8 @@ class TestExpandProjectionParser_Select extends PHPUnit_Framework_TestCase
                 $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                $queryProvider, //IDataServiceQueryProvider implementation (set to null)
-                                               $configuration //Service configuration
+                                               $configuration, //Service configuration
+                                               false
                                              );
                 $customersResourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Customers');
                 $customerResourceType = $customersResourceSetWrapper->getResourceType(); 
@@ -164,7 +166,8 @@ class TestExpandProjectionParser_Select extends PHPUnit_Framework_TestCase
                 $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                $queryProvider, //IDataServiceQueryProvider implementation (set to null)
-                                               $configuration //Service configuration
+                                               $configuration, //Service configuration
+                                               false
                                              );
                 $customersResourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Customers');
                 $customerResourceType = $customersResourceSetWrapper->getResourceType(); 
@@ -211,7 +214,8 @@ class TestExpandProjectionParser_Select extends PHPUnit_Framework_TestCase
                 $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                $queryProvider, //IDataServiceQueryProvider implementation (set to null)
-                                               $configuration //Service configuration
+                                               $configuration, //Service configuration
+                                               false
                                              );
                 $ordersResourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
                 $orderResourceType = $ordersResourceSetWrapper->getResourceType(); 
@@ -283,7 +287,8 @@ class TestExpandProjectionParser_Select extends PHPUnit_Framework_TestCase
                 $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                $queryProvider, //IDataServiceQueryProvider implementation (set to null)
-                                               $configuration //Service configuration
+                                               $configuration, //Service configuration
+                                               false
                                              );
                 $ordersResourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
                 $orderResourceType = $ordersResourceSetWrapper->getResourceType(); 
@@ -362,7 +367,8 @@ class TestExpandProjectionParser_Select extends PHPUnit_Framework_TestCase
                 $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                $queryProvider, //IDataServiceQueryProvider implementation (set to null)
-                                               $configuration //Service configuration
+                                               $configuration, //Service configuration
+                                               false
                                              );
                 $orderDetailsResourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Order_Details');
                 $orderDetailsResourceType = $orderDetailsResourceSetWrapper->getResourceType(); 
@@ -475,7 +481,8 @@ class TestExpandProjectionParser_Select extends PHPUnit_Framework_TestCase
                 $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                $queryProvider, //IDataServiceQueryProvider implementation (set to null)
-                                               $configuration //Service configuration
+                                               $configuration, //Service configuration
+                                               false
                                              );
                 //Selecting immediate properties of 'Order_Details' will de-select subtree of 
                 //'Order_Details' if they are not selected explicitly  
@@ -531,7 +538,8 @@ class TestExpandProjectionParser_Select extends PHPUnit_Framework_TestCase
                 $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                $queryProvider, //IDataServiceQueryProvider implementation (set to null)
-                                               $configuration //Service configuration
+                                               $configuration, //Service configuration
+                                               false
                                              );
                 $customersResourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Customers');
                 $customerResourceType = $customersResourceSetWrapper->getResourceType();
@@ -619,7 +627,8 @@ class TestExpandProjectionParser_Select extends PHPUnit_Framework_TestCase
                 $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                $queryProvider, //IDataServiceQueryProvider implementation (set to null)
-                                               $configuration //Service configuration
+                                               $configuration, //Service configuration
+                                               false
                                              );
                 $ordersResourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
                 $orderResourceType = $ordersResourceSetWrapper->getResourceType(); 

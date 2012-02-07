@@ -20,6 +20,7 @@ use ODataProducer\Common\Messages;
 use ODataProducer\Common\ODataException;
 use ODataProducer\Providers\Metadata\Type\Boolean;
 use ODataProducer\Providers\Metadata\ResourceType;
+use ODataProducer\Providers\Metadata\ResourceTypeKind;
 use ODataProducer\UriProcessor\QueryProcessor\ExpressionParser\Expressions\AbstractExpression;
 use ODataProducer\UriProcessor\QueryProcessor\ExpressionParser\Expressions\ArithmeticExpression;
 use ODataProducer\UriProcessor\QueryProcessor\ExpressionParser\Expressions\LogicalExpression;
@@ -59,34 +60,54 @@ class ExpressionParser2 extends ExpressionParser
     private $_navigationPropertiesUsedInTheExpression;
 
     /**
+     * Indicates whether the end user has implemented IExpressionProvider or not.
+     * 
+     * @var bool
+     */
+    private $_isCustomExpressionProvider;
+   
+    /**
      * Create new instance of ExpressionParser2
      *      
-     * @param string       $text         The text expression to parse.
-     * @param ResourceType $resourceType The resource type in which expression
-     *                                   will be applied.
+     * @param string       $text                       The text expression to parse.
+     * @param ResourceType $resourceType               The resource type in which 
+     *                                                 expression will be applied.
+     * @param Bool         $isCustomExpressionProvider True if IExpressionProvider provider is
+     *                                                 implemented by user, False otherwise
      */
-    public function __construct($text, ResourceType $resourceType)
-    {
-        parent::__construct($text, $resourceType);
+    public function __construct($text, ResourceType $resourceType, 
+        $isCustomExpressionProvider
+    ) {
+        parent::__construct($text, $resourceType, $isCustomExpressionProvider);
         $this->_navigationPropertiesUsedInTheExpression = array();
+        $this->_isCustomExpressionProvider = $isCustomExpressionProvider;
     }
 
     /**
-     * Parse and generate PHP expression from the the given 
-     * odata expression.
+     * Parse and generate PHP or custom (using custom expression provider) expression 
+     * from the the given odata expression.
      * 
-     * @param string       $text         The text expression to parse
-     * @param ResourceType $resourceType The resource type in which expression 
-     *                                   will be applied
+     * @param string              $text               The text expression to parse
+     * @param ResourceType        $resourceType       The resource type in which 
+     *                                                expression will be applied
+     * @param IExpressionProvider $expressionProvider Implementation of IExpressionProvider
+     *                                                if developer is using IDSQP2, null
+     *                                                in-case of IDSQP which falls to default
+     *                                                expression provider that is PHP expression
+     *                                                provider
      * 
      * @return InternalFilterInfo
      * 
      * @throws ODataException If any error occurs while parsing the odata 
-     *                        expression or building the php expression.
+     *                        expression or building the php/custom expression.
      */
-    public static function parseExpression2($text, ResourceType $resourceType)
-    {
-        $expressionParser2 = new ExpressionParser2($text, $resourceType);
+    public static function parseExpression2($text, ResourceType $resourceType, 
+        $expressionProvider
+    ) {
+        $isCustomExpressionProvider = !is_null($expressionProvider);
+        $expressionParser2 = new ExpressionParser2(
+            $text, $resourceType, $isCustomExpressionProvider
+        );
         $expressionTree = null;
         try {
             $expressionTree = $expressionParser2->parseFilter();
@@ -94,39 +115,59 @@ class ExpressionParser2 extends ExpressionParser
             throw $odataException;
         }
 
+        $expressionProcessor = null;
+        $expressionAsString = null;
+        $filterFunction = null;
+        if (!$isCustomExpressionProvider) {
+            $expressionProvider = new PHPExpressionProvider('$lt');
+        }
+        
+        $expressionProvider->setResourceType($resourceType);
         $expressionProcessor = new ExpressionProcessor(
-            $expressionTree, 
-            new PHPExpressionProvider('$lt')
+            $expressionTree,
+            $expressionProvider
         );
+
         try {
-            $phpExpression = $expressionProcessor->processExpression();
+            $expressionAsString = $expressionProcessor->processExpression();
         } catch (\InvalidArgumentException $invalidArgumentException) {
             ODataException::createInternalServerError(
                 $invalidArgumentException->getMessage()
             );
         }
 
-        $navigationPropertiesUsed 
-            = empty($expressionParser2->_navigationPropertiesUsedInTheExpression) 
-             ? 
-            null : 
-            $expressionParser2->_navigationPropertiesUsedInTheExpression; 
+        $navigationPropertiesUsed
+        = empty($expressionParser2->_navigationPropertiesUsedInTheExpression)
+        ?
+        null :
+        $expressionParser2->_navigationPropertiesUsedInTheExpression;
         unset($expressionProcessor);
         unset($expressionParser2);
-        $filterFunction = new AnonymousFunction(
-            array('$lt'), 
-            'if(' . $phpExpression . ') { return true; } else { return false;}'
-        );
+        if ($isCustomExpressionProvider) {
+            $filterFunction = new AnonymousFunction(
+                array(),
+                ' ODataException::createInternalServerError("Library will not perform filtering in case of custom IExpressionProvider"); '
+            );
+        } else {
+            $filterFunction = new AnonymousFunction(
+                array('$lt'),
+                'if(' . $expressionAsString . ') { return true; } else { return false;}'
+            );
+        }
+        
         return new InternalFilterInfo(
-            new FilterInfo($navigationPropertiesUsed), 
-            $filterFunction
+            new FilterInfo($navigationPropertiesUsed),
+            $filterFunction,
+            $expressionAsString,
+            $isCustomExpressionProvider
         );
     }
 
     /**
      * Parse the expression
      * 
-     * @see library/ODataProducer/QueryProcessor/ODataProducer\QueryProcessor.ExpressionParser::parseFilter()
+     * @see library/ODataProducer/QueryProcessor/ODataProducer\QueryProcessor.
+     *      ExpressionParser::parseFilter()
      * 
      * @return AbstractExpression
      * 
@@ -140,12 +181,12 @@ class ExpressionParser2 extends ExpressionParser
                 Messages::expressionParser2BooleanRequired()
             );
         }
-        
-        $resultExpression = $this->_processNodeForNullability($expression, null);
-        if ($resultExpression != null) {
-            return $resultExpression;
+        if (!$this->_isCustomExpressionProvider) {
+            $resultExpression = $this->_processNodeForNullability($expression, null);
+            if ($resultExpression != null) {
+                return $resultExpression;
+            }
         }
-
         return $expression;
     }
 
@@ -284,8 +325,9 @@ class ExpressionParser2 extends ExpressionParser
      * 
      * @return LogicalExpression or NULL
      */
-    private function _processLogicalNode(LogicalExpression $expression, $parentExpression)
-    {
+    private function _processLogicalNode(
+        LogicalExpression $expression, $parentExpression
+    ) {
         $leftNullableExpTree = $this->_processNodeForNullability(
             $expression->getLeft(), 
             $expression

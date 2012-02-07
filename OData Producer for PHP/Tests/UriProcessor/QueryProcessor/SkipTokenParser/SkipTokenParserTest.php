@@ -32,7 +32,8 @@ class TestSkipTokenParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
@@ -72,7 +73,8 @@ class TestSkipTokenParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
@@ -144,7 +146,8 @@ class TestSkipTokenParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
@@ -199,7 +202,8 @@ class TestSkipTokenParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
@@ -262,7 +266,8 @@ class TestSkipTokenParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Order_Details');
@@ -316,7 +321,8 @@ class TestSkipTokenParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
@@ -365,7 +371,8 @@ class TestSkipTokenParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                     $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                     null, //IDataServiceQueryProvider implementation (set to null)
-                                    $configuration //Service configuuration
+                                    $configuration, //Service configuuration
+                                    false
                                     );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Customers');
@@ -404,7 +411,8 @@ class TestSkipTokenParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Customers');
@@ -455,7 +463,8 @@ class TestSkipTokenParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
@@ -495,7 +504,8 @@ class TestSkipTokenParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
@@ -531,7 +541,8 @@ class TestSkipTokenParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Customers');

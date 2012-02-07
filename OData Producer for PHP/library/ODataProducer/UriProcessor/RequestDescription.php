@@ -214,7 +214,7 @@ class RequestDescription
      * @var boolean
      */
     private $_isExecuted;
-
+    
     /**
      * Constructs a new instance of RequestDescription.
      * 
@@ -1037,6 +1037,5 @@ class RequestDescription
 
         return $version;
     }
-    
 }
 ?>

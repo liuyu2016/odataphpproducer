@@ -281,7 +281,12 @@ abstract class DataService implements IRequestHandler, IDataService
             );
         }
 
+        $expectingQP2 = false;
         $queryProvider = $this->getService('IDataServiceQueryProvider');
+        if (is_null($queryProvider)) {
+          $expectingQP2 = true;
+          $queryProvider = $this->getService('IDataServiceQueryProvider2'); 
+        }
 
         if (is_null($queryProvider)) {
             ODataException::createInternalServerError(
@@ -289,21 +294,35 @@ abstract class DataService implements IRequestHandler, IDataService
             );
         }
 
-        if (!is_object($queryProvider) 
-            || array_search('ODataProducer\Providers\Query\IDataServiceQueryProvider', class_implements($queryProvider)) === false
-        ) {
+        if (!is_object($queryProvider)) {
+          ODataException::createInternalServerError(
+              Messages::dataServiceInvalidQueryInstance()
+          );
+        }
+
+        if ($expectingQP2) {
+            if (array_search('ODataProducer\Providers\Query\IDataServiceQueryProvider2', class_implements($queryProvider)) === false) {
+                ODataException::createInternalServerError(
+                    Messages::dataServiceInvalidQueryInstance()
+                );
+            }
+        } else {
+          if (array_search('ODataProducer\Providers\Query\IDataServiceQueryProvider', class_implements($queryProvider)) === false) {
             ODataException::createInternalServerError(
                 Messages::dataServiceInvalidQueryInstance()
             );
+          }
         }
 
         $this->_dataServiceConfiguration = new DataServiceConfiguration($metadataProvider);
         $this->_metadataQueryProviderWrapper = new MetadataQueryProviderWrapper(
             $metadataProvider, 
             $queryProvider, 
-            $this->_dataServiceConfiguration
+            $this->_dataServiceConfiguration,
+            $expectingQP2
         );
 
+        
         $this->initializeService($this->_dataServiceConfiguration);
     }
 

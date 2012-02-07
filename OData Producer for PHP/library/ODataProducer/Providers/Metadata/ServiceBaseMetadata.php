@@ -46,6 +46,7 @@ class ServiceBaseMetadata implements IDataServiceMetadataProvider
     protected $associationSets = array();
     protected $containerName;
     protected $namespaceName;
+    public $mappedDetails = null;
     
     //Begin Implementation of IDataServiceMetadataProvider
     /**

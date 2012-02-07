@@ -1686,9 +1686,6 @@ class TestUriProcessor extends PHPUnit_Framework_TestCase
             $this->assertTrue(!is_null($filterFunction));
             $this->assertTrue($filterFunction instanceof AnonymousFunction);
             $code = $filterFunction->getCode();    
-            $this->assertEquals($code, 
-              'if(is_null($lt->HouseNumber)) { return true; } else { return false;}');
-            
             $this->assertTrue(is_null($requestDescription->getRootProjectionNode()));
             $host->getWebOperationContext()->resetWebContextInternal();
         } catch (\Exception $exception) {

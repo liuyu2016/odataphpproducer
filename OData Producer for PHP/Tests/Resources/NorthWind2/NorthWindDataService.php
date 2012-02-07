@@ -22,7 +22,7 @@ class NorthWindDataService1 extends DataService1 implements IServiceProvider
      * 
      * @param DataServiceConfiguration $config
      */
-    public static function initializeService(DataServiceConfiguration &$config)
+    public function initializeService(DataServiceConfiguration &$config)
     {
         $config->setEntitySetPageSize('*', 5);
         $config->setEntitySetAccessRule('*', EntitySetRights::ALL);
@@ -56,6 +56,17 @@ class NorthWindDataService1 extends DataService1 implements IServiceProvider
         }
 
         return null;
-    }    
+    }
+
+    /**
+     * This method will be called to verify that DSExpressionProvider is 
+     * implemented by the end-developer or not
+     * 
+     * @return object
+     */
+    public function &getExpressionProvider()
+    {
+    	return null;
+    }
 }
 ?>

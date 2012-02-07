@@ -48,7 +48,8 @@ class PHPExpressionProviderTest1 extends PHPUnit_Framework_TestCase
             //Relational EQUAL expression with left child as arithmetic expression, the null check should propagte from AE to LE level
             $odataUriExpression = 'Customer/Address/LineNumber add 4 eq 8';
             $parser = new ExpressionParser2($odataUriExpression,
-                            $this->_northWindMetadata->resolveResourceSet('Orders')->getResourceType());
+                            $this->_northWindMetadata->resolveResourceSet('Orders')->getResourceType(),
+            		        null);
             $expressionTree = $parser->parseFilter();
             $expressionProcessor = new ExpressionProcessor($expressionTree, new PHPExpressionProvider('$lt'));
             $actualPHPExpression = $expressionProcessor->processExpression();
@@ -217,7 +218,8 @@ class PHPExpressionProviderTest1 extends PHPUnit_Framework_TestCase
         try {            
             $odataUriExpression = 'CustomerID ge \'ALFKI\'';
             $parser = new ExpressionParser2($odataUriExpression,
-                            $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType());
+                            $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType(),
+            		        null);
             $expressionTree = $parser->parseFilter();
             $expressionProcessor = new ExpressionProcessor($expressionTree, new PHPExpressionProvider('$lt'));
             $actualPHPExpression = $expressionProcessor->processExpression();
@@ -315,7 +317,8 @@ class PHPExpressionProviderTest1 extends PHPUnit_Framework_TestCase
         try {            
             $odataUriExpression = 'OrderDate eq datetime\'2010-12-08\'';
             $parser = new ExpressionParser2($odataUriExpression,
-                            $this->_northWindMetadata->resolveResourceSet('Orders')->getResourceType());
+                            $this->_northWindMetadata->resolveResourceSet('Orders')->getResourceType(),
+            		        null);
             $expressionTree = $parser->parseFilter();
             $expressionProcessor = new ExpressionProcessor($expressionTree, new PHPExpressionProvider('$lt'));
             $actualPHPExpression = $expressionProcessor->processExpression();            
@@ -377,7 +380,8 @@ class PHPExpressionProviderTest1 extends PHPUnit_Framework_TestCase
         try {            
             $odataUriExpression = 'Customer/CustomerGuid eq guid\'05b242e752eb46bd8f0e6568b72cd9a5\'';
             $parser = new ExpressionParser2($odataUriExpression,
-                            $this->_northWindMetadata->resolveResourceSet('Orders')->getResourceType());
+                            $this->_northWindMetadata->resolveResourceSet('Orders')->getResourceType(),
+            		        null);
             $expressionTree = $parser->parseFilter();
             $expressionProcessor = new ExpressionProcessor($expressionTree, new PHPExpressionProvider('$lt'));
             $actualPHPExpression = $expressionProcessor->processExpression();
@@ -396,7 +400,8 @@ class PHPExpressionProviderTest1 extends PHPUnit_Framework_TestCase
         try {            
             $odataUriExpression = 'round(Price) eq 200.60';
             $parser = new ExpressionParser2($odataUriExpression,
-                            $this->_northWindMetadata->resolveResourceSet('Orders')->getResourceType());
+                            $this->_northWindMetadata->resolveResourceSet('Orders')->getResourceType(),
+            		        null);
             $expressionTree = $parser->parseFilter();
             $expressionProcessor = new ExpressionProcessor($expressionTree, new PHPExpressionProvider('$lt'));
             $actualPHPExpression = $expressionProcessor->processExpression();            
@@ -433,7 +438,7 @@ class PHPExpressionProviderTest1 extends PHPUnit_Framework_TestCase
             //Query for Customers with country as Germany
             $result = $this->executeExpression('Country eq \'Germany\'', 
                                                 $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType(), 
-                                                $data['Customers']);                                                
+                                                $data['Customers']);
             $this->AssertEquals(count($result), 2);
             $this->AssertEquals($result[0]->Country, 'Germany');
             $this->AssertEquals($result[1]->Country, 'Germany');
@@ -441,14 +446,14 @@ class PHPExpressionProviderTest1 extends PHPUnit_Framework_TestCase
             //Query for Customers with no address
             $result = $this->executeExpression('Address eq null', 
                                                 $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType(), 
-                                                $data['Customers']);                                                
+                                                $data['Customers']);
             $this->AssertEquals(count($result), 1);
             $this->AssertEquals($result[0]->CustomerGuid, '15b242e7-52eb-46bd-8f0e-6568b72cd9a6');
             
             //Query for Customers with non-primary address
             $result = $this->executeExpression('Address/Address2/IsPrimary eq false', 
                                                 $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType(), 
-                                                $data['Customers']);                                                     
+                                                $data['Customers']);
             $this->AssertEquals(count($result), 1);
             $this->AssertEquals($result[0]->CustomerName, 'Ann Devon');
             
@@ -550,7 +555,7 @@ class PHPExpressionProviderTest1 extends PHPUnit_Framework_TestCase
     {
         try {
             //Parse the Astoria filter query option to expression tree
-            $parser = new ExpressionParser2($astoriaFilter, $resourceType);
+            $parser = new ExpressionParser2($astoriaFilter, $resourceType, null);
             $expressionTree = $parser->parseFilter();
             //emit the PHP expression corrosponds to Astoria filter query
             $expressionProcessor = new ExpressionProcessor($expressionTree, new PHPExpressionProvider('$lt'));

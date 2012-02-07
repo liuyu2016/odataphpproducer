@@ -41,7 +41,8 @@ class TestMetadataWriter extends PHPUnit_Framework_TestCase
         $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
             $northWindMetadata, //IDataServiceMetadataProvider implementation 
             $northWindQuery, //IDataServiceQueryProvider implementation (set to null)
-            $configuration //Service configuuration
+            $configuration, //Service configuuration
+            false
         );
         $metadataWriter = new MetadataWriter($metaQueryProverWrapper);
         $metadata = $metadataWriter->writeMetadata();

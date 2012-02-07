@@ -2,14 +2,24 @@
 <configuration>
     <services>
         <service name="NorthWind.svc">
-          <path>\services\NorthWind\NorthWindDataService.php</path> 
+          <path>\services\IDataServiceQueryProvider Implementation\NorthWind\NorthWindDataService.php</path> 
           <classname>NorthWindDataService</classname>
           <baseURL>/NorthWind.svc</baseURL>
         </service>
-        <service name="WordPress.svc">
-          <path>\services\WordPress\WordPressDataService.php</path>
+      <service name="NorthWind2.svc">
+        <path>\services\IDataServiceQueryProvider2 Implementation\NorthWind\NorthWindDataService.php</path>
+        <classname>NorthWindDataService</classname>
+        <baseURL>/NorthWind2.svc</baseURL>
+      </service>
+      <service name="WordPress.svc">
+        <path>\services\IDataServiceQueryProvider Implementation\WordPress\WordPressDataService.php</path>
+        <classname>WordPressDataService</classname>
+        <baseURL>/WordPress.svc</baseURL>
+      </service>
+        <service name="WordPress2.svc">
+          <path>\services\IDataServiceQueryProvider2 Implementation\WordPress\WordPressDataService.php</path>
           <classname>WordPressDataService</classname>
-          <baseURL>/WordPress.svc</baseURL>
+          <baseURL>/WordPress2.svc</baseURL>
       </service>
     </services>
 </configuration>

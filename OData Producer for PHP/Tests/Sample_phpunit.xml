@@ -20,64 +20,64 @@ To generate code coverage report from this XML file.
   <testsuites>
 <!-- NOT USING ANY RESOURCE -->
       <testsuite name="Writers-Metadata">
-		<directory>Writers\Metadata</directory>
+		<directory>\Tests\Writers\Metadata</directory>
       </testsuite>
 	  <testsuite name="Common">
-  		<directory>Common</directory>
+  		<directory>\Tests\Common</directory>
 	  </testsuite>
 	  <testsuite name="Writers-ATOM">
-		<directory>Writers\Atom</directory>
+		<directory>\Tests\Writers\Atom</directory>
 	  </testsuite>
 	  <testsuite name="Writers-JSON">
-		<directory>Writers\Json</directory>
+		<directory>\Tests\Writers\Json</directory>
 	  </testsuite>
 <!-- USING DISPATCHER -->
       <testsuite name="Misc">
-		<directory>Misc</directory>
+		<directory>\Tests\Misc</directory>
 	  </testsuite>
 	  <testsuite name="ObjectModel">
-		<directory>ObjectModel</directory>
+		<directory>\Tests\ObjectModel</directory>
 	  </testsuite>
   	  <testsuite name="OperationContext">
-	  	<directory>OperationContext</directory>
+	  	<directory>\Tests\OperationContext</directory>
       </testsuite>
 <!-- USING RESOURCE\NORTHWINDMETADATA.PHP -->
 	  <testsuite name="Config">
-		<directory>Configuration</directory>
+		<directory>\Tests\Configuration</directory>
 	  </testsuite>
 	  <testsuite name="Providers">
-		<directory>Providers\Metadata</directory>
+		<directory>\Tests\Providers\Metadata</directory>
 	  </testsuite>
 	  <testsuite name="ExpandProjection">
-		<directory>UriProcessor\QueryProcessor\ExpandProjectionParser</directory>
+		<directory>\Tests\UriProcessor\QueryProcessor\ExpandProjectionParser</directory>
 	  </testsuite>
 	  <testsuite name="OrderByParser">
-		<directory>UriProcessor\QueryProcessor\OrderByParser</directory>
+		<directory>\Tests\UriProcessor\QueryProcessor\OrderByParser</directory>
 	  </testsuite>
 	  <testsuite name="SkipTokenParser">
-		<file>UriProcessor\QueryProcessor\SkipTokenParser\SkipTokenParserTest.php</file>
+		<file>\Tests\UriProcessor\QueryProcessor\SkipTokenParser\SkipTokenParserTest.php</file>
 	  </testsuite>
 	  <testsuite name="SegmentParser">
-		<directory>UriProcessor\ResourcePathProcessor\SegmentParser</directory>
+		<directory>\Tests\UriProcessor\ResourcePathProcessor\SegmentParser</directory>
 	  </testsuite>
 	  <testsuite name="Other">
-			<file>UriProcessor\QueryProcessor\ExpressionParser\ExpressionParserTest.php</file>
-			<file>UriProcessor\QueryProcessor\ExpressionParser\ExpressionParser2Test.php</file>
-			<file>UriProcessor\QueryProcessor\ExpressionParser\PHPExpressionProviderTest.php</file>
-			<file>UriProcessor\UriProcessorTest.php</file>
-			<file>UriProcessor\QueryProcessor\ExpressionParser\ExpressionLexerTest.php</file>			
+			<file>\Tests\UriProcessor\QueryProcessor\ExpressionParser\ExpressionParserTest.php</file>
+			<file>\Tests\UriProcessor\QueryProcessor\ExpressionParser\ExpressionParser2Test.php</file>
+			<file>\Tests\UriProcessor\QueryProcessor\ExpressionParser\PHPExpressionProviderTest.php</file>
+			<file>\Tests\UriProcessor\UriProcessorTest.php</file>
+			<file>\Tests\UriProcessor\QueryProcessor\ExpressionParser\ExpressionLexerTest.php</file>			
 	  </testsuite>
 <!-- USING RESOURCE\NORTHWIND2\.. -->
  	<testsuite name="Other2">
-		<file>UriProcessor\UriProcessorExecutionTest.php</file>
+		<file>\Tests\UriProcessor\UriProcessorExecutionTest.php</file>
 	</testsuite>
 	<testsuite name="SkipTokenParser2">
-		<file>UriProcessor\QueryProcessor\SkipTokenParser\SkipTokenParserTest2.php</file>
+		<file>\Tests\UriProcessor\QueryProcessor\SkipTokenParser\SkipTokenParserTest2.php</file>
 	</testsuite>
   </testsuites>
   <filter>
    <whitelist>
-	<directory suffix=".php">..\library</directory>
+	<directory suffix=".php">\library</directory>
    </whitelist>
   </filter>
 </phpunit>

@@ -23,6 +23,7 @@ use ODataProducer\UriProcessor\ResourcePathProcessor\SegmentParser\RequestTarget
 use ODataProducer\UriProcessor\QueryProcessor\SkipTokenParser\SkipTokenParser;
 use ODataProducer\UriProcessor\QueryProcessor\OrderByParser\OrderByParser;
 use ODataProducer\UriProcessor\QueryProcessor\ExpressionParser\ExpressionParser2;
+use ODataProducer\UriProcessor\QueryProcessor\ExpressionParser\InternalFilterInfo;
 use ODataProducer\UriProcessor\QueryProcessor\ExpandProjectionParser\ExpandProjectionParser;
 use ODataProducer\Common\Messages;
 use ODataProducer\Common\ODataException;
@@ -313,14 +314,15 @@ class QueryProcessor
                     Messages::queryProcessorQueryFilterOptionNotApplicable()
                 );
             }
-
             $resourceType = $this->_requestDescription->getTargetResourceType();
-            //assert($resourceType != null)
             try {
-                $internalFilterInfo 
-                    = ExpressionParser2::parseExpression2($filter, $resourceType);
-                $this->_requestDescription
-                    ->setInternalFilterInfo($internalFilterInfo);
+            	$expressionProvider = $this->_dataService->getMetadataQueryProviderWrapper()->getExpressionProvider();      
+                $internalFilterInfo = ExpressionParser2::parseExpression2(
+                    $filter, $resourceType, $expressionProvider
+                );
+                $this->_requestDescription->setInternalFilterInfo(
+                    $internalFilterInfo
+                );                
             } catch (ODataException $odataException) {
                 throw $odataException;
             }

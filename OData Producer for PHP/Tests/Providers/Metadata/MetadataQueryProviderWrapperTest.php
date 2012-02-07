@@ -30,7 +30,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $this->assertEquals($metaQueryProverWrapper->getContainerName(), 'NorthWindEntities');
@@ -49,7 +50,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );        
             $customerResourceSet = $metaQueryProverWrapper->resolveResourceSet('Customers');
             $this->assertNull($customerResourceSet);
@@ -60,7 +62,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );                                    
             $configuration->setEntitySetAccessRule('Customers', EntitySetRights::ALL);
             $customerResourceSet = $metaQueryProverWrapper->resolveResourceSet('Customers');
@@ -81,7 +84,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
             $resourceSets = $metaQueryProverWrapper->getResourceSets();
             $this->assertTrue(empty($resourceSets));
@@ -92,7 +96,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
             $configuration->setEntitySetAccessRule('*', EntitySetRights::ALL);
             $resourceSets = $metaQueryProverWrapper->getResourceSets();
@@ -113,7 +118,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
             //Try to resolve non-existing type
             $type = $metaQueryProverWrapper->resolveResourceType('Customer1');
@@ -140,7 +146,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
             $resourceTypes = $metaQueryProverWrapper->getTypes();
             $this->assertEquals(count($resourceTypes), 7);
@@ -160,7 +167,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
             $customerEntityType = $metaQueryProverWrapper->resolveResourceType('Customer');
             $this->assertNotNull($customerEntityType);
@@ -179,7 +187,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
             $orderEntityType = $metaQueryProverWrapper->resolveResourceType('Order');
             $this->assertNotNull($orderEntityType);
@@ -199,7 +208,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
             $configuration->setEntitySetAccessRule('Customers', EntitySetRights::ALL);
             $configuration->setEntitySetAccessRule('Orders', EntitySetRights::ALL);
@@ -226,7 +236,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
             $configuration->setEntitySetAccessRule('Customers', EntitySetRights::ALL);
             //Set orders entity set as invisible
@@ -252,7 +263,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
 
             $exceptionThrown = false;
@@ -293,7 +305,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
             $exceptionThrown = false;
             try {
@@ -321,7 +334,8 @@ class MetadataQueryProviderWrapperTest extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                         $metadataProvider, //IDataServiceMetadataProvider implementation 
                                         null, //IDataServiceQueryProvider implementation (set to null)
-                                        $configuration //Service configuuration
+                                        $configuration, //Service configuuration
+                                        false
                                         );
             $exceptionThrown = false;
             try {

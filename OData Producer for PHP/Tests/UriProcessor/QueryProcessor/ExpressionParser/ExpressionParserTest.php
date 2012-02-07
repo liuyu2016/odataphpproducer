@@ -42,7 +42,8 @@ class ExpressionParserTest extends PHPUnit_Framework_TestCase
         try {            
             $expression = '123';
             $parser = new ExpressionParser($expression,
-                         $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType());
+                         $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType(),
+            		     false);
             $expr = $parser->parseFilter();
             $this->AssertEquals($expr instanceof ConstantExpression, true);
             $this->AssertEquals($expr->getType() instanceof Int32, true);
@@ -152,7 +153,8 @@ class ExpressionParserTest extends PHPUnit_Framework_TestCase
         try {
            $expression = 'CustomerID';
            $parser = new ExpressionParser($expression,
-                         $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType());
+                         $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType(),
+           		         false);
            $expr = $parser->parseFilter();
            $this->AssertEquals($expr instanceof PropertyAccessExpression, true);
            $this->AssertEquals($expr->getType() instanceof String, true);
@@ -236,7 +238,8 @@ class ExpressionParserTest extends PHPUnit_Framework_TestCase
            
            $expression = 'Customer/CustomerID';
            $parser = new ExpressionParser($expression,
-                         $this->_northWindMetadata->resolveResourceSet('Orders')->getResourceType());
+                         $this->_northWindMetadata->resolveResourceSet('Orders')->getResourceType(),
+           		         false);
            $expr = $parser->parseFilter();
            $this->AssertEquals($expr instanceof PropertyAccessExpression, true);
            $this->AssertEquals($expr->getType() instanceof String, true); 
@@ -266,7 +269,8 @@ class ExpressionParserTest extends PHPUnit_Framework_TestCase
         try {
             $expression = "1 add 2";
             $parser = new ExpressionParser($expression,
-                         $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType());
+                         $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType(),
+            		     false);
             $expr = $parser->parseFilter();
             $this->AssertEquals($expr instanceof ArithmeticExpression, true);
             $this->AssertEquals($expr->getType() instanceof Int32, true);
@@ -448,11 +452,12 @@ class ExpressionParserTest extends PHPUnit_Framework_TestCase
             
             $expression = '2.5 gt 2';
             $parser = new ExpressionParser($expression,
-                          $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType());
+                          $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType(),
+            		      false);
             $expr = $parser->parseFilter();
             $this->AssertEquals($expr instanceof RelationalExpression, true);
             $this->AssertEquals($expr->getType() instanceof Boolean, true);
-            
+
             $expression = 'true le false';
             $parser->resetParser($expression);
             $expr = $parser->parseFilter();
@@ -460,9 +465,9 @@ class ExpressionParserTest extends PHPUnit_Framework_TestCase
             $this->AssertEquals($expr->getType() instanceof Boolean, true);
             $this->AssertEquals($expr->getLeft() instanceof ConstantExpression, true);
             $this->AssertEquals($expr->getRight() instanceof ConstantExpression, true);
-            $this->AssertEquals($expr->getLeft()->getValue(), true);
+            $this->AssertEquals($expr->getLeft()->getValue(), 'true');
             $this->AssertEquals($expr->getRight()->getType() instanceof Boolean, true);
-            
+   
             $expression = 'Country eq null';
             $parser->resetParser($expression);
             $expr = $parser->parseFilter();            
@@ -471,7 +476,7 @@ class ExpressionParserTest extends PHPUnit_Framework_TestCase
             $this->AssertEquals($expr->getType() instanceof Boolean, true);
             $paramExpressions = $expr->getParamExpressions();
             $this->AssertEquals($paramExpressions[0] instanceof PropertyAccessExpression, true);
-            
+
             $expression = 'Country ge \'India\'';
             $parser->resetParser($expression);
             $expr = $parser->parseFilter();
@@ -486,7 +491,7 @@ class ExpressionParserTest extends PHPUnit_Framework_TestCase
             $this->AssertEquals($paramExpression[1]->getType() instanceof String, true);
             $this->AssertEquals($expr->getRight() instanceof ConstantExpression, true);
             $this->AssertEquals($expr->getRight()->getValue(), 0);
-            
+
             $exceptionThrown = false;
             try {
                 $expression = "1F gt 2M";
@@ -528,7 +533,8 @@ class ExpressionParserTest extends PHPUnit_Framework_TestCase
         try {
             $expression = 'true or false';
             $parser = new ExpressionParser($expression,
-                          $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType());
+                          $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType(),
+            		      false);
             $expr = $parser->parseFilter();
             $this->AssertEquals($expr instanceof LogicalExpression, true);
             $this->AssertEquals($expr->getType() instanceof Boolean, true);
@@ -609,13 +615,14 @@ class ExpressionParserTest extends PHPUnit_Framework_TestCase
             $this->fail('An unexpected ODataException has been raised');
         }
     }
-    
+
     public function testUnaryExpression()
     {
         try {        
             $expression = "-Rating";
             $parser = new ExpressionParser($expression,
-                          $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType());
+                          $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType(),
+            		      false);
             $expr = $parser->parseFilter();
             $this->AssertEquals($expr instanceof UnaryExpression, true);
             $this->AssertEquals($expr->getNodeType(), ExpressionType::NEGATE);
@@ -670,7 +677,8 @@ class ExpressionParserTest extends PHPUnit_Framework_TestCase
             
             $expression = 'year(datetime\'1988-11-11\')';
             $parser = new ExpressionParser($expression,
-                          $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType());
+                          $this->_northWindMetadata->resolveResourceSet('Customers')->getResourceType(),
+            		      false);
             $expr = $parser->parseFilter();
             $this->AssertEquals($expr instanceof FunctionCallExpression, true);
             $this->AssertEquals($expr->getType() instanceof Int32, true);

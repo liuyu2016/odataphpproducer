@@ -38,7 +38,7 @@ interface IDataService
      * 
      * @return nothing
      */
-    public static function initializeService(DataServiceConfiguration &$config);
+    public function initializeService(DataServiceConfiguration &$config);
 
     /**
      * Gets refernce to the configuration class to access the

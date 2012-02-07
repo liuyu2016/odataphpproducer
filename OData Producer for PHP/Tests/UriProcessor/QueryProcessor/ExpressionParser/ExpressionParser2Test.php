@@ -24,7 +24,7 @@ class PHPExpressionProviderTest extends PHPUnit_Framework_TestCase
         try {
               $odataUriExpression = 'UnitPrice ge 6';
               $resourceType = $this->_northWindMetadata->resolveResourceSet('Order_Details')->getResourceType();
-              $internalFilterInfo = ExpressionParser2::parseExpression2($odataUriExpression, $resourceType);
+              $internalFilterInfo = ExpressionParser2::parseExpression2($odataUriExpression, $resourceType, null);
               $this->assertTrue(!is_null($internalFilterInfo));
               $filterInfo = $internalFilterInfo->getFilterInfo();
               $this->assertTrue(!is_null($filterInfo));
@@ -36,7 +36,7 @@ class PHPExpressionProviderTest extends PHPUnit_Framework_TestCase
               $this->assertEquals($whereCode, 'if((!(is_null($lt->UnitPrice)) && ($lt->UnitPrice >= 6))) { return true; } else { return false;}');
 
               $odataUriExpression = 'Order/Customer/CustomerID eq \'ANU\' or Product/ProductID gt 123 and UnitPrice ge 6';
-              $internalFilterInfo = ExpressionParser2::parseExpression2($odataUriExpression, $resourceType);
+              $internalFilterInfo = ExpressionParser2::parseExpression2($odataUriExpression, $resourceType, null);
               $this->assertTrue(!is_null($internalFilterInfo));
               $filterInfo = $internalFilterInfo->getFilterInfo();
               $this->assertTrue(!is_null($filterInfo));
@@ -64,7 +64,7 @@ class PHPExpressionProviderTest extends PHPUnit_Framework_TestCase
 
               $odataUriExpression = 'Customer/Address/LineNumber add 4 eq 8';
               $resourceType = $this->_northWindMetadata->resolveResourceSet('Orders')->getResourceType();
-              $internalFilterInfo = ExpressionParser2::parseExpression2($odataUriExpression, $resourceType);
+              $internalFilterInfo = ExpressionParser2::parseExpression2($odataUriExpression, $resourceType, null);
               $this->assertTrue(!is_null($internalFilterInfo));
               $filterInfo = $internalFilterInfo->getFilterInfo();
               $this->assertTrue(!is_null($filterInfo));
@@ -82,7 +82,7 @@ class PHPExpressionProviderTest extends PHPUnit_Framework_TestCase
 
               //Test with property acess expression in function call
               $odataUriExpression = 'replace(Customer/CustomerID, \'LFK\', \'RTT\') eq \'ARTTI\'';              
-              $internalFilterInfo = ExpressionParser2::parseExpression2($odataUriExpression, $resourceType);
+              $internalFilterInfo = ExpressionParser2::parseExpression2($odataUriExpression, $resourceType, null);
               $this->assertTrue(!is_null($internalFilterInfo));
               $filterInfo = $internalFilterInfo->getFilterInfo();
               $this->assertTrue(!is_null($filterInfo));

@@ -20,7 +20,7 @@ class NorthWindDataServiceV3 extends DataService2 implements IServiceProvider
      * 
      * @param DataServiceConfiguration $config
      */
-    public static function initializeService(DataServiceConfiguration &$config)
+    public function initializeService(DataServiceConfiguration &$config)
     {
         $config->setEntitySetPageSize('*', 5);
         $config->setEntitySetAccessRule('*', EntitySetRights::ALL);

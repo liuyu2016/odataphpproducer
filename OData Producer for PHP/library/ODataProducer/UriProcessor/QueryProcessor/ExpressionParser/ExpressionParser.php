@@ -81,18 +81,52 @@ class ExpressionParser
      */
     private $_resourceType;
     
+    /**
+     * True if the end developer implemented IDSQP2, in that case the end developer
+     * is responsible for implementing expression provider (IExpressionProvider).
+     * 
+     * @var bool
+     */
+    private $_isCustomExpressionProvider;
+
+    /**
+     * True if the filter expression contains level 2 property acess, for example
+     * Customers?$filter=Address/LineNumber eq 12
+     * Customer?$filter=Order/OrderID gt 1234    
+     * False otherwise.
+     * 
+     * @var bool
+     */
+    private $_hasLevel2PropertyInTheExpression;
+    
 
     /**
      * Construct a new instance of ExpressionParser
      * 
-     * @param string       $text         The expression to parse.
-     * @param ResourceType $resourceType The resource type of the resource
-     *                                   targetted by the resource path.
+     * @param string       $text                       The expression to parse.
+     * @param ResourceType $resourceType               The resource type of the resource
+     *                                                 targetted by the resource path.
+     * @param bool         $isCustomExpressionProvider True if the end developer is responsible
+     *                                                 for the expression provider implementation.
+     * Note: TODO Expression parser should not depends on the fact that end user is implmenting
+     * IExpressionProider or not.
      */
-    public function __construct($text, ResourceType $resourceType)
+    public function __construct($text, ResourceType $resourceType, $isCustomExpressionProvider)
     {
         $this->_lexer = new ExpressionLexer($text);
         $this->_resourceType = $resourceType;
+        $this->_isCustomExpressionProvider = $isCustomExpressionProvider;
+        $this->_hasLevel2PropertyInTheExpression = false;
+    }
+
+    /**
+     * Checks whether the expression contains level 2 property access. 
+     * 
+     * @return boolean
+     */
+    public function hasLevel2Property()
+    {
+        return $this->_hasLevel2PropertyInTheExpression;
     }
 
     /**  
@@ -219,7 +253,7 @@ class ExpressionParser
             $right = $this->_parseAdditive();
             $left = self::_generateComparisonExpression(
                 $left, $right, 
-                $comparisonToken
+                $comparisonToken, $this->_isCustomExpressionProvider
             );
         }
 
@@ -468,6 +502,7 @@ class ExpressionParser
             $parentResourceType = $this->_resourceType;
         } else {
             $parentResourceType = $parentExpression->getResourceType();
+            $this->_hasLevel2PropertyInTheExpression = true;
         }
 
         $resourceProperty 
@@ -657,13 +692,16 @@ class ExpressionParser
     /**
      * Generates Comparison Expression
      * 
-     * @param AbstractExpression $left            The LHS expression.
-     * @param AbstractExpression $right           The RHS expression.
-     * @param ExpressionToken    $expressionToken The cmparision expression token.
+     * @param AbstractExpression $left                       The LHS expression.
+     * @param AbstractExpression $right                      The RHS expression.
+     * @param ExpressionToken    $expressionToken            The cmparision expression token.
+     * @param boolean            $isCustomExpressionProvider True if the end user is responsible
+     *                                                       for providing the IExpressionProvider
+     *                                                       implementation.
      * 
      * @return AbstractExpression
      */
-    private static function _generateComparisonExpression($left, $right, $expressionToken)
+    private static function _generateComparisonExpression($left, $right, $expressionToken, $isCustomExpressionProvider)
     {
         FunctionDescription::verifyRelationalOpArguments(
             $expressionToken, $left, $right
@@ -684,7 +722,7 @@ class ExpressionParser
             $left = new FunctionCallExpression(
                 $strcmpFunctions[0], array($left, $right)
             );
-            $right = new ConstantExpression(0, new Int32());
+            $right = new ConstantExpression(0, new Int32());  
         }
 
         $dateTime = new DateTime();
@@ -719,27 +757,60 @@ class ExpressionParser
 
         $null = new Null1();
         if ($left->typeIs($null) || $right->typeIs($null)) {
-            $arg = $left->typeIs($null) ? $right : $left;
-            $isNullFunctionDescription 
-                = new FunctionDescription(
-                    'is_null', new Boolean(), array($arg->getType())
-                );
-            switch ($expressionToken->Text) {
-            case ODataConstants::KEYWORD_EQUAL:
-                return new FunctionCallExpression(
-                    $isNullFunctionDescription, array($arg)
-                );
-                break;
-            case ODataConstants::KEYWORD_NOT_EQUAL:
-                return new UnaryExpression(
-                    new FunctionCallExpression(
+          // If the end user is responsible for implementing IExpressionProvider
+          // then the sub-tree for a nullability check would be:
+          //
+          //          RelationalExpression(EQ/NE)
+          //                    |
+          //               ------------
+          //               |           |
+          //               |           |
+          //            CustomerID    NULL
+          //
+          // Otherwise (In case of default PHPExpressionProvider):
+          //          
+          //  CustomerID eq null
+          //  ==================
+          //
+          //              FunctionCallExpression(is_null)
+          //                       |
+          //                       |- Signature => bool (typeof(CustomerID))
+          //                       |- args => {CustomerID}
+          //
+          //
+          //  CustomerID ne null
+          //  ==================
+          //
+          //              UnaryExpression (not)
+          //                       |
+          //              FunctionCallExpression(is_null)
+          //                       |
+          //                       |- Signature => bool (typeof(CustomerID))
+          //                       |- args => {CustomerID}
+          //
+            if (!$isCustomExpressionProvider) {
+                $arg = $left->typeIs($null) ? $right : $left;
+                  $isNullFunctionDescription 
+                      = new FunctionDescription(
+                          'is_null', new Boolean(), array($arg->getType())
+                      );
+                switch ($expressionToken->Text) {
+                case ODataConstants::KEYWORD_EQUAL:
+                    return new FunctionCallExpression(
                         $isNullFunctionDescription, array($arg)
-                    ), 
-                    ExpressionType::NOT_LOGICAL, 
-                    new Boolean()
-                );
-                break;
-            }            
+                    );
+                    break;
+                case ODataConstants::KEYWORD_NOT_EQUAL:
+                    return new UnaryExpression(
+                        new FunctionCallExpression(
+                            $isNullFunctionDescription, array($arg)
+                        ), 
+                        ExpressionType::NOT_LOGICAL, 
+                        new Boolean()
+                    );
+                    break;
+                }
+            }
         }
 
         switch ($expressionToken->Text) {

@@ -27,6 +27,7 @@ use ODataProducer\Configuration\IDataServiceConfiguration;
 use ODataProducer\UriProcessor\ResourcePathProcessor\SegmentParser\KeyDescriptor;
 use ODataProducer\Common\ODataException;
 use ODataProducer\Common\Messages;
+use ODataProducer\Providers\Metadata\MetadataMapping;
 /**
  * A wrapper class over IDataServiceMetadataProvider and 
  * IDataServiceQueryProvider implementations
@@ -49,9 +50,11 @@ class MetadataQueryProviderWrapper
     private $_metadataProvider;
 
     /**
-     * Holds reference to IDataServiceQueryProvider implementation
+     * Holds reference to IDataServiceQueryProvider or IDataServiceQueryProvider2 implementation
      * 
      * @var IDataServiceQueryProvider
+     * @var IDataServiceQueryProvider2
+     * 
      */
     private $_queryProvider;
 
@@ -61,6 +64,14 @@ class MetadataQueryProviderWrapper
      * @var IDataServiceConfiguration
      */
     private $_configuration;
+
+    /**
+     * Indicate the type of this::$_queryProvider, True if $_queryProvider is an implementation of
+     * IDataServiceQueryProvider2, False if its an implementation of IDataServiceQueryProvider
+     * 
+     * @var bool
+     */
+    private $_isQP2;
 
     /**
      * Cache for ResourceProperties of a resource type that belongs to a 
@@ -98,14 +109,17 @@ class MetadataQueryProviderWrapper
      * Creates a new instance of MetadataQueryProviderWrapper
      * 
      * @param IDataServiceMetadataProvider $metadataProvider Reference to IDataServiceMetadataProvider implementation
-     * @param IDataServiceQueryProvider    $queryProvider    Reference to IDataServiceQueryProvider implementation
+     * @param IDataServiceQueryProvider    $queryProvider    Reference to IDataServiceQueryProvider/IDataServiceQueryProvider2 implementation
      * @param IDataServiceConfiguration    $configuration    Reference to IDataServiceConfiguration implementation
+     * @param bool                         $isQP2            True if $queryProvider is an instance of IDataServiceQueryProvider2
+     *                                                       False if $queryProvider is an instance of IDataServiceQueryProvider
      */
-    public function __construct($metadataProvider, $queryProvider, $configuration)
+    public function __construct($metadataProvider, $queryProvider, $configuration, $isQP2)
     {
         $this->_metadataProvider = $metadataProvider;
         $this->_queryProvider = $queryProvider;
         $this->_configuration = $configuration;
+        $this->_isQP2 = $isQP2;
         $this->_resourceSetWrapperCache = array();
         $this->_resourceTypeCache = array();
         $this->_resourceAssociationSetCache = array();
@@ -607,19 +621,86 @@ class MetadataQueryProviderWrapper
         return $type;
     }
 
+    /**
+     * To check whether the QueryProvider implements IDSQP or ODSQP2
+     * 
+     * @return boolean True if the QueryProvider implements IDataServiceQueryPorivder2
+     *                 False in-case of IDataServiceQueryProvider.
+     */
+    public function isQP2()
+    {
+    	return $this->_isQP2;
+    }
+
+    /**
+     * Gets the underlying custom expression provider, the end developer is 
+     * responsible for implementing IExpressionProvider if he choose for 
+     * IDataServiceQueryProvider2.
+     * 
+     * @return IExpressionProvider/NULL Instance of IExpressionProvider implementation
+     *                                  in case of IDSQP2, else null in case of IDSQP.
+     */
+    public function getExpressionProvider()
+    {
+    if ($this->_isQP2) {
+      $expressionProvider = $this->_queryProvider->getExpressionProvider();
+      if (is_null($expressionProvider)) {
+        ODataException::createInternalServerError(
+            Messages::metadataQueryProviderExpressionProviderMustNotBeNullOrEmpty()
+        );
+      }
+
+      if (!is_object($expressionProvider)
+          || array_search('ODataProducer\UriProcessor\QueryProcessor\ExpressionParser\IExpressionProvider', class_implements($expressionProvider)) === false
+      ) {
+        ODataException::createInternalServerError(
+            Messages::metadataQueryProviderInvalidExpressionProviderInstance()
+        );
+      }
+
+      return $expressionProvider;
+    }
+    
+    return null;
+    }
+
     //Wrappers for IDataServiceQueryProvider methods
 
     /**
      * Gets collection of entities belongs to an entity set
      * 
-     * @param ResourceSet $resourceSet The entity set whose entities needs 
-     *                                 to be fetched
+     * @param ResourceSet        $resourceSet        The entity set whose entities needs 
+     *                                               to be fetched
+     * @param InternalFilterInfo $internalFilterInfo An instance of InternalFilterInfo
+     *                                               if the $filter option is submitted
+     *                                               by the client, NULL if no $filter 
+     *                                               option present in the client request
      * 
      * @return array(Object)/array()
      */
-    public function getResourceSet(ResourceSet $resourceSet)
+    public function getResourceSet(ResourceSet $resourceSet, $internalFilterInfo)
     {
-        $entityInstances = $this->_queryProvider->getResourceSet($resourceSet);
+      // TODO Remove following string replacement
+      $filterOption = null;
+        if ($filterOption!==null) {
+            if ($this->_metadataProvider->mappedDetails !== null) {
+                $filterOption = $this->updateFilterInfo($resourceSet, $this->_metadataProvider->mappedDetails, $filterOption);
+            }
+        }
+
+        $entityInstances = null;
+        if ($this->_isQP2) {
+          $customExpressionAsString = null;
+          if (!is_null($internalFilterInfo)) {
+            $this->assert($internalFilterInfo->isCustomExpression(), '$internalFilterInfo->isCustomExpression()');
+            $customExpressionAsString = $internalFilterInfo->getExpressionAsString();
+          }
+
+          $entityInstances = $this->_queryProvider->getResourceSet($resourceSet, $customExpressionAsString);
+        } else {
+            $entityInstances = $this->_queryProvider->getResourceSet($resourceSet);
+        }
+
         if (!is_array($entityInstances)) {
             ODataException::createInternalServerError(
                 Messages::metadataQueryProviderWrapperIDSQPMethodReturnsNonArray(
@@ -631,6 +712,50 @@ class MetadataQueryProviderWrapper
         return $entityInstances;
     }
  
+    /**
+      Update filter expression and replace field names present in the expression by their names in DB
+     * 
+     * @param ResourceSet     $resourceSet   The resource set
+     * @param MetadataMapping $mappedDetails Contains all the mappedInfo
+     * @param String          $filterOption  filterExpression Corresponding to underlying DB
+     * 
+     * @return String Modified filterOption
+     */
+    public function updateFilterInfo(ResourceSet $resourceSet, MetadataMapping $mappedDetails, $filterOption)
+    {
+        $metaEntityName = $resourceSet->getName();
+        $tableNameInDB = $mappedDetails->getMappedInfoForEntity($resourceSet->getName());
+        $patterns = array();
+        $replacements = array();
+        foreach (array_keys($mappedDetails->mappingDetail[$metaEntityName]) as $metaPropertyName) {
+            $patterns[0] = "/\s$metaPropertyName\s/";
+            $patterns[1] = "/\(\s*$metaPropertyName\s*\)/";
+            $patterns[2] = "/\(\s*$metaPropertyName\s*\,/";
+            $patterns[3] = "/\s*$metaPropertyName\s*=/";
+            $patterns[4] = "/\s*,$metaPropertyName/";
+            $patterns[5] = "/\s*$metaPropertyName\s*\)/";
+            $propertyName = $mappedDetails->mappingDetail[$metaEntityName][$metaPropertyName];
+            if (preg_match("/\./",$propertyName)) {
+                $replacements[0] = $propertyName;
+                $replacements[1] = "($propertyName)";
+                $replacements[2] = "($propertyName,";
+                $replacements[3]  = "$propertyName=";
+                $replacements[4] = ",$propertyName";
+                $replacements[5] = "$propertyName)";
+            } else {
+                $replacements[0] = $tableNameInDB.".$propertyName";
+                $replacements[1] = "($tableNameInDB."."$propertyName)";
+                $replacements[2] = "($tableNameInDB."."$propertyName,";
+                $replacements[3] = "$tableNameInDB."."$propertyName=";
+                $replacements[4] = ", $tableNameInDB."."$propertyName";
+                $replacements[5] = "$tableNameInDB."."$propertyName)";
+            }
+            $filterOption = preg_replace($patterns, $replacements, $filterOption);
+            unset($replacements);
+        }
+        return $filterOption;
+    }
+    
     /**
      * Gets an entity instance from an entity set identifed by a key
      * 
@@ -658,27 +783,57 @@ class MetadataQueryProviderWrapper
     /**
      * Get related resource set for a resource
      * 
-     * @param ResourceSet      $sourceResourceSet The source resource set
-     * @param mixed            $sourceEntity      The resource
-     * @param ResourceSet      $targetResourceSet The resource set of the navigation
-     *                                            property
-     * @param ResourceProperty $targetProperty    The navigation property to be 
-     *                                            retrieved
+     * @param ResourceSet        $sourceResourceSet  The source resource set
+     * @param mixed              $sourceEntity       The resource
+     * @param ResourceSet        $targetResourceSet  The resource set of the navigation
+     *                                               property
+     * @param ResourceProperty   $targetProperty     The navigation property to be 
+     *                                               retrieved
+     * @param InternalFilterInfo $internalFilterInfo An instance of InternalFilterInfo
+     *                                               if the $filter option is submitted
+     *                                               by the client, NULL if no $filter 
+     *                                               option present in the client request 
      *                                               
      * @return array(Objects)/array() Array of related resource if exists, if no 
      *                                related resources found returns empty array
      */
     public function getRelatedResourceSet(ResourceSet $sourceResourceSet, 
         $sourceEntity, ResourceSet $targetResourceSet, 
-        ResourceProperty $targetProperty
+        ResourceProperty $targetProperty, 
+        $internalFilterInfo
     ) {
-        $entityInstances 
-            = $this->_queryProvider->getRelatedResourceSet(
-                $sourceResourceSet, 
-                $sourceEntity, 
-                $targetResourceSet, 
-                $targetProperty
-            );
+      $filterOption = null;
+        if ($filterOption!==null) {
+            if ($this->_metadataProvider->mappedDetails !== null) {
+                $filterOption = $this->updateFilterInfo($targetResourceSet, $this->_metadataProvider->mappedDetails, $filterOption);
+            }
+        }
+        
+        if ($this->_isQP2) {
+          $customExpressionAsString = null;
+          if (!is_null($internalFilterInfo)) {
+            $this->assert($internalFilterInfo->isCustomExpression(), '$internalFilterInfo->isCustomExpression()');
+            $customExpressionAsString = $internalFilterInfo->getExpressionAsString();
+          }
+
+            $entityInstances 
+                = $this->_queryProvider->getRelatedResourceSet(
+                    $sourceResourceSet, 
+                    $sourceEntity, 
+                    $targetResourceSet, 
+                    $targetProperty,
+                    $customExpressionAsString
+                );
+        } else {
+          $entityInstances
+              = $this->_queryProvider->getRelatedResourceSet(
+                  $sourceResourceSet,
+                  $sourceEntity,
+                  $targetResourceSet,
+                  $targetProperty
+              );
+        }
+
         if (!is_array($entityInstances)) {
             ODataException::createInternalServerError(
                 Messages::metadataQueryProviderWrapperIDSQPMethodReturnsNonArray(
@@ -856,6 +1011,24 @@ class MetadataQueryProviderWrapper
                 //);
             }
         }
+    }
+
+    /**
+     * Assert that the given condition is true.
+     *
+     * @param boolean $condition         Condition to be asserted.
+     * @param string  $conditionAsString String containing message incase
+     *                                   if assertion fails.
+     *
+     * @throws InvalidOperationException Incase if assertion failes.
+     *
+     * @return void
+     */
+    protected function assert($condition, $conditionAsString)
+    {
+    	if (!$condition) {
+    		throw new InvalidOperationException("Unexpected state, expecting $conditionAsString");
+    	}
     }
 }
 ?>

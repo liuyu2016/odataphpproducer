@@ -14,6 +14,7 @@
  * 
  */
 namespace ODataProducer\UriProcessor\QueryProcessor\ExpressionParser;
+use ODataProducer\Providers\Metadata\ResourceType;
 use ODataProducer\Providers\Metadata\Type\IType;
 /**
  * The expression provider interface.
@@ -34,6 +35,16 @@ interface IExpressionProvider
      * @return string
      */    
     public function getIteratorName();
+
+    /**
+     * call-back for setting the resource type.
+     * 
+     * @param ResourceType $resourceType The resource type on which the filter
+     *                                   is going to be applied.
+     *
+     * @return void
+     */
+    public function setResourceType(ResourceType $resourceType);
     
     /**
      * Call-back for logical expression

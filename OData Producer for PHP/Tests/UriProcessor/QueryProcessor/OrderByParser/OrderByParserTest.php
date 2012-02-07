@@ -43,7 +43,8 @@ class TestOrderByParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                               $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                               null, //IDataServiceQueryProvider implementation (set to null)
-                                              $configuration //Service configuuration
+                                              $configuration, //Service configuuration
+                                              false
                                              );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Employees');
@@ -77,7 +78,8 @@ class TestOrderByParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                               $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                               null, //IDataServiceQueryProvider implementation (set to null)
-                                              $configuration //Service configuuration
+                                              $configuration, //Service configuuration
+                                              false
                                              );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Customers');
@@ -127,7 +129,8 @@ class TestOrderByParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                               $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                               null, //IDataServiceQueryProvider implementation (set to null)
-                                              $configuration //Service configuuration
+                                              $configuration, //Service configuuration
+                                              false
                                              );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Customers');
@@ -161,7 +164,8 @@ class TestOrderByParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                               $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                               null, //IDataServiceQueryProvider implementation (set to null)
-                                              $configuration //Service configuuration
+                                              $configuration, //Service configuuration
+                                              false
                                              );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
@@ -210,7 +214,8 @@ class TestOrderByParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                               $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                               null, //IDataServiceQueryProvider implementation (set to null)
-                                              $configuration //Service configuuration
+                                              $configuration, //Service configuuration
+                                              false
                                              );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Customers');
@@ -324,7 +329,8 @@ class TestOrderByParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                               $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                               null, //IDataServiceQueryProvider implementation (set to null)
-                                              $configuration //Service configuuration
+                                              $configuration, //Service configuuration
+                                              false
                                              );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Customers');
@@ -358,7 +364,8 @@ class TestOrderByParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                               $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                               null, //IDataServiceQueryProvider implementation (set to null)
-                                              $configuration //Service configuuration
+                                              $configuration, //Service configuuration
+                                              false
                                              );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Order_Details');
@@ -435,7 +442,8 @@ class TestOrderByParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                   $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                   null, //IDataServiceQueryProvider implementation (set to null)
-                                                  $configuration //Service configuuration
+                                                  $configuration, //Service configuuration
+                                                  false
                                                  );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Orders');
@@ -469,7 +477,8 @@ class TestOrderByParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                   $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                   null, //IDataServiceQueryProvider implementation (set to null)
-                                                  $configuration //Service configuuration
+                                                  $configuration, //Service configuuration
+                                                  false
                                                  );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Order_Details');
@@ -670,7 +679,8 @@ class TestOrderByParser extends PHPUnit_Framework_TestCase
             $metaQueryProverWrapper = new MetadataQueryProviderWrapper(
                                                   $northWindMetadata, //IDataServiceMetadataProvider implementation 
                                                   null, //IDataServiceQueryProvider implementation (set to null)
-                                                  $configuration //Service configuuration
+                                                  $configuration, //Service configuuration
+                                                  false
                                                  );
 
             $resourceSetWrapper = $metaQueryProverWrapper->resolveResourceSet('Order_Details');
